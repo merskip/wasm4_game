@@ -1,32 +1,36 @@
 #![no_main]
 #![no_std]
 
+mod world_map;
+
 extern crate alloc;
 
-use alloc::format;
-use alloc::string::ToString;
 use wasm4 as w4;
+use crate::world_map::WorldMap;
 
 struct Runtime {
-    count: i32,
+    world_map: WorldMap,
     framebuffer: w4::draw::Framebuffer,
 }
 
 impl w4::rt::Runtime for Runtime {
     fn start(resources: w4::rt::Resources) -> Self {
         Runtime {
-            count: 0,
-            framebuffer: resources.framebuffer
+            world_map: WorldMap::new([
+                0b1111111111111111,
+                0b1000001010000101,
+                0b1011100000110101,
+                0b1000111010010001,
+                0b1010001011110111,
+                0b1011101001100001,
+                0b1000100000001101,
+                0b1111111111111111,
+            ]),
+            framebuffer: resources.framebuffer,
         }
     }
 
     fn update(&mut self) {
-        if self.count % 60 == 0 {
-            w4::trace("tick");
-            self.count = 0;
-        }
-        self.count += 1;
-
         self.framebuffer.text("Hello world", [10, 10]);
     }
 }
