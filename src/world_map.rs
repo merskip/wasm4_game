@@ -7,7 +7,7 @@ impl WorldMap {
         Self { map }
     }
 
-    fn is_wall(&self, x: f32, y: f32) -> bool {
+    pub fn is_wall(&self, x: f32, y: f32) -> bool {
         match self.map.get(y as usize) {
             Some(line) => (line & (0b1 << x as usize)) != 0,
             None => true,

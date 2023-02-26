@@ -1,19 +1,14 @@
 [alias]
 cart-build = "build --profile cartridge"
 cart-run = "run --profile cartridge"
-cart-doc = "doc --profile cartridge"
-
-cb = "cart-build"
-cr = "cart-run"
-cd = "cart-doc"
-
-[build]
-target = "wasm32-unknown-unknown"
 
 [profile.cartridge]
 inherits = "release"
 opt-level = "z"
 lto = true
+
+[build]
+target = "wasm32-unknown-unknown"
 
 [target.wasm32-unknown-unknown]
 runner = "w4 run"
