@@ -4,11 +4,14 @@
 mod world_map;
 mod player_state;
 mod wasm4;
+mod raycasting;
 
+use core::f32::consts::PI;
 use crate::player_state::PlayerState;
 use crate::wasm4::application::*;
 use crate::wasm4::framebuffer::Framebuffer;
 use crate::wasm4::gamepad::Gamepad;
+use crate::wasm4::geometry::Point;
 use crate::world_map::WorldMap;
 
 struct MainApplication {
@@ -38,7 +41,16 @@ impl Application for MainApplication {
     }
 
     fn update(&mut self) {
-        self.player_state.update(&self.world_map, &self.gamepad);
+        self.player_state.update_movement(&self.world_map, &self.gamepad);
+
+        let fov = PI / 2.7;
+        let view = self.player_state.get_view(&self.world_map, fov, fov / 160.0, 100.0);
+        for (x, wall_height) in view.iter().enumerate() {
+            self.framebuffer.line_vertical(
+                Point::new(x as i32, 80 - (wall_height / 2)),
+                *wall_height as u32,
+            );
+        }
     }
 }
 

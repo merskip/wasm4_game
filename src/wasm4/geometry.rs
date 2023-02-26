@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Point<T> {
     pub x: T,
     pub y: T,
@@ -9,6 +10,7 @@ impl<T> Point<T> {
     }
 }
 
+#[derive(Clone)]
 pub struct Size<T> {
     pub width: T,
     pub height: T,
