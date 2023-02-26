@@ -1,0 +1,8 @@
+[package]
+name = "wasm4-game"
+version = "0.1.0"
+authors = ["Piotr Merski <merskip@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+wasm4 = "0.1.2"
