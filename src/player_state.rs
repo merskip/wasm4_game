@@ -67,7 +67,7 @@ impl PlayerState {
 
             // Get the minimum of the two distances and
             // "convert" it into a wall height.
-            *wall = (wall_height / f32::min(h_dist, v_dist)) as i32;
+            *wall = (wall_height / (f32::min(h_dist, v_dist) * cosf(angle - self.camera_angle))) as i32;
         }
 
         walls
