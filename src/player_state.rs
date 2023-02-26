@@ -45,14 +45,14 @@ impl PlayerState {
     }
 
     /// Returns 160 wall heights from the player's perspective.
-    pub fn get_view(&self, world_map: &WorldMap, fov: f32, angle_ray: f32, wall_height: f32) -> [i32; 160] {
+    pub fn get_view(&self, world_map: &WorldMap, fov: f32, angle_ray: f32, wall_height: f32) -> [(i32, bool); 160] {
         // The player's FOV is split in half by their viewing angle.
         // In order to get the ray's first angle we must
         // add half the FOV to the player's angle to get
         // the edge of the player's FOV.
         let starting_angle = self.camera_angle + fov / 2.0;
 
-        let mut walls = [0; 160];
+        let mut walls = [(0, false); 160];
         let position = self.get_position();
 
         for (idx, wall) in walls.iter_mut().enumerate() {
@@ -65,9 +65,18 @@ impl PlayerState {
             let h_dist = raycasting::horizontal_intersection(&position, world_map, angle);
             let v_dist = raycasting::vertical_intersection(&position, world_map, angle);
 
+            let (min_dist, shadow) = if h_dist < v_dist {
+                (h_dist, false)
+            } else {
+                (v_dist, true)
+            };
+
             // Get the minimum of the two distances and
             // "convert" it into a wall height.
-            *wall = (wall_height / (f32::min(h_dist, v_dist) * cosf(angle - self.camera_angle))) as i32;
+            *wall = (
+                (wall_height / (f32::min(h_dist, v_dist) * cosf(angle - self.camera_angle))) as i32,
+                shadow
+            );
         }
 
         walls

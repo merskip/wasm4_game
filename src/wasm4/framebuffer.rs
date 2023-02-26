@@ -32,4 +32,8 @@ impl Framebuffer {
     pub fn text(&self, text: &str, start: Point<i32>) {
         unsafe { system::textUtf8(text.as_ptr(), text.len(), start.x, start.y) }
     }
+
+    pub fn set_color(&self, color_index: u16) {
+        unsafe { *system::DRAW_COLORS = color_index }
+    }
 }
