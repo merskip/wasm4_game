@@ -34,7 +34,7 @@ impl Application for MainApplication {
                 0b1000100000001101,
                 0b1111111111111111,
             ]),
-            player_state: PlayerState::new(1.5, 1.5, 0.0),
+            player_state: PlayerState::new(1.5, 1.5, 30.0),
             gamepad: Gamepad::gamepad1(),
             framebuffer,
         }
