@@ -2,14 +2,17 @@
 #![no_std]
 
 mod world_map;
+mod player_state;
 
 extern crate alloc;
 
 use wasm4 as w4;
+use crate::player_state::PlayerState;
 use crate::world_map::WorldMap;
 
 struct Runtime {
     world_map: WorldMap,
+    player_state: PlayerState,
     framebuffer: w4::draw::Framebuffer,
 }
 
@@ -26,6 +29,7 @@ impl w4::rt::Runtime for Runtime {
                 0b1000100000001101,
                 0b1111111111111111,
             ]),
+            player_state: PlayerState::new(1.5, 1.5, 0.0),
             framebuffer: resources.framebuffer,
         }
     }
