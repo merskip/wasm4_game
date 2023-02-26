@@ -4,6 +4,7 @@ mod system;
 pub mod application;
 pub mod framebuffer;
 pub mod geometry;
+pub mod gamepad;
 
 #[allow(dead_code)]
 pub fn trace(msg: &str) {

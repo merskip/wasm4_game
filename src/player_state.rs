@@ -1,4 +1,6 @@
 use libm::{cosf, sinf};
+use crate::wasm4::gamepad::Gamepad;
+use crate::wasm4::gamepad::GamepadButton::{DPadDown, DPadLeft, DPadRight, DPadUp};
 use crate::world_map::WorldMap;
 
 pub struct PlayerState {
@@ -13,24 +15,24 @@ impl PlayerState {
         Self { x, y, camera_angle, step_size: 0.045 }
     }
 
-    pub fn update(&mut self, world_map: &WorldMap, up: bool, down: bool, left: bool, right: bool) {
+    pub fn update(&mut self, world_map: &WorldMap, gamepad: &Gamepad) {
         let previous_position = (self.x, self.y);
 
-        if up {
+        if gamepad.is_pressed(DPadUp) {
             self.x += cosf(self.camera_angle) * self.step_size;
             self.y += -sinf(self.camera_angle) * self.step_size;
         }
 
-        if down {
+        if gamepad.is_pressed(DPadDown) {
             self.x -= cosf(self.camera_angle) * self.step_size;
             self.y -= -sinf(self.camera_angle) * self.step_size;
         }
 
-        if right {
+        if gamepad.is_pressed(DPadRight) {
             self.camera_angle -= self.step_size;
         }
 
-        if left {
+        if gamepad.is_pressed(DPadLeft) {
             self.camera_angle += self.step_size;
         }
 

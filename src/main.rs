@@ -8,12 +8,13 @@ mod wasm4;
 use crate::player_state::PlayerState;
 use crate::wasm4::application::*;
 use crate::wasm4::framebuffer::Framebuffer;
-use crate::wasm4::geometry::Point;
+use crate::wasm4::gamepad::Gamepad;
 use crate::world_map::WorldMap;
 
 struct MainApplication {
     world_map: WorldMap,
     player_state: PlayerState,
+    gamepad: Gamepad,
     framebuffer: Framebuffer,
 }
 
@@ -31,19 +32,13 @@ impl Application for MainApplication {
                 0b1111111111111111,
             ]),
             player_state: PlayerState::new(1.5, 1.5, 0.0),
+            gamepad: Gamepad::gamepad1(),
             framebuffer,
         }
     }
 
     fn update(&mut self) {
-        self.framebuffer.text("Hello world", Point::new(10, 10));
-        // self.player_state.update(
-        //     &self.world_map,
-        //     unsafe { *GAMEPAD1 & BUTTON_UP != 0 },
-        //     unsafe { *GAMEPAD1 & BUTTON_DOWN != 0 },
-        //     unsafe { *GAMEPAD1 & BUTTON_LEFT != 0 },
-        //     unsafe { *GAMEPAD1 & BUTTON_RIGHT != 0 },
-        // );
+        self.player_state.update(&self.world_map, &self.gamepad);
     }
 }
 
