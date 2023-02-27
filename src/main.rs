@@ -11,7 +11,7 @@ use crate::player_state::PlayerState;
 use crate::wasm4::application::*;
 use crate::wasm4::framebuffer::Framebuffer;
 use crate::wasm4::gamepad::Gamepad;
-use crate::wasm4::geometry::Point;
+use crate::wasm4::geometry::{Point, Size};
 use crate::world_map::WorldMap;
 
 struct MainApplication {
@@ -23,8 +23,10 @@ struct MainApplication {
 
 #[repr(u16)]
 enum Color {
+    _Background = 1,
     WallNormal = 2,
     WallShadowed = 3,
+    Ground = 4,
 }
 
 impl Application for MainApplication {
@@ -48,6 +50,9 @@ impl Application for MainApplication {
 
     fn update(&mut self) {
         self.player_state.update_movement(&self.world_map, &self.gamepad);
+
+        self.framebuffer.set_color(Color::Ground as u16);
+        self.framebuffer.rectangle(Point::new(0, 80), Size::new(160, 160));
 
         let fov = PI / 2.7;
         let view = self.player_state.get_view(&self.world_map, fov, fov / 160.0, 100.0);
