@@ -1,80 +1,43 @@
 use libm::{cosf, sinf};
-use crate::raycasting::{Direction, ray_cast};
+use crate::camera::Camera;
 use crate::wasm4::gamepad::Gamepad;
 use crate::wasm4::gamepad::GamepadButton::{DPadDown, DPadLeft, DPadRight, DPadUp};
-use crate::wasm4::geometry::Point;
 use crate::world_map::WorldMap;
 
 pub struct PlayerState {
-    x: f32,
-    y: f32,
-    camera_angle: f32,
+    pub camera: Camera,
     pub step_size: f32,
 }
 
 impl PlayerState {
-    pub const fn new(x: f32, y: f32, camera_angle: f32) -> Self {
-        Self { x, y, camera_angle, step_size: 0.045 }
+    pub const fn new(camera: Camera, step_size: f32) -> Self {
+        Self { camera, step_size }
     }
 
     pub fn update_movement(&mut self, world_map: &WorldMap, gamepad: &Gamepad) {
-        let previous_position = (self.x, self.y);
+        let previous_position = (self.camera.position.x, self.camera.position.y);
 
         if gamepad.is_pressed(DPadUp) {
-            self.x += cosf(self.camera_angle) * self.step_size;
-            self.y += -sinf(self.camera_angle) * self.step_size;
+            self.camera.position.x += cosf(self.camera.angle) * self.step_size;
+            self.camera.position.y += -sinf(self.camera.angle) * self.step_size;
         }
 
         if gamepad.is_pressed(DPadDown) {
-            self.x -= cosf(self.camera_angle) * self.step_size;
-            self.y -= -sinf(self.camera_angle) * self.step_size;
+            self.camera.position.x -= cosf(self.camera.angle) * self.step_size;
+            self.camera.position.y -= -sinf(self.camera.angle) * self.step_size;
         }
 
         if gamepad.is_pressed(DPadRight) {
-            self.camera_angle -= self.step_size;
+            self.camera.angle -= self.step_size;
         }
 
         if gamepad.is_pressed(DPadLeft) {
-            self.camera_angle += self.step_size;
+            self.camera.angle += self.step_size;
         }
 
         // If moving us on this frame put us into a wall just revert it
-        if world_map.is_wall(self.x, self.y) {
-            (self.x, self.y) = previous_position;
+        if world_map.is_wall(self.camera.position.x, self.camera.position.y) {
+            (self.camera.position.x, self.camera.position.y) = previous_position;
         }
-    }
-
-    /// Returns 160 wall heights from the player's perspective.
-    pub fn get_view(&self, world_map: &WorldMap, fov: f32, angle_ray: f32, wall_height: f32) -> [(i32, Direction); 160] {
-        // The player's FOV is split in half by their viewing angle.
-        // In order to get the ray's first angle we must
-        // add half the FOV to the player's angle to get
-        // the edge of the player's FOV.
-        let starting_angle = self.camera_angle + fov / 2.0;
-
-        let mut walls = [(0, Direction::Horizontal); 160];
-        let position = self.get_position();
-
-        for (idx, wall) in walls.iter_mut().enumerate() {
-            // `idx` is what number ray we are, `wall` is
-            // a mutable reference to a value in `walls`.
-            let angle = starting_angle - idx as f32 * angle_ray;
-
-            // Get both the closest wall intersections for this angle
-            let (distance, direction) = ray_cast(&position, world_map, angle);
-
-            // Get the minimum of the two distances and
-            // "convert" it into a wall height.
-            *wall = (
-                (wall_height / (distance * cosf(angle - self.camera_angle))) as i32,
-                direction
-            );
-        }
-
-        walls
-    }
-
-    pub fn get_position(&self) -> Point<f32> {
-        Point::new(self.x, self.y)
     }
 }

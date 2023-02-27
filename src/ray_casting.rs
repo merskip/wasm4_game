@@ -1,6 +1,6 @@
 use core::f32::consts::{FRAC_PI_2, PI};
 use libm::{ceilf, fabsf, floorf, sqrtf, tanf};
-use crate::raycasting::Direction::{Horizontal, Vertical};
+use crate::ray_casting::Direction::{Horizontal, Vertical};
 use crate::wasm4::geometry::Point;
 use crate::world_map::WorldMap;
 
