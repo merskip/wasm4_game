@@ -65,7 +65,7 @@ impl PlayerState {
             let h_dist = raycasting::horizontal_intersection(&position, world_map, angle);
             let v_dist = raycasting::vertical_intersection(&position, world_map, angle);
 
-            let (min_dist, shadow) = if h_dist < v_dist {
+            let (_, shadow) = if h_dist < v_dist {
                 (h_dist, false)
             } else {
                 (v_dist, true)

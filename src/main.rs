@@ -21,6 +21,12 @@ struct MainApplication {
     framebuffer: Framebuffer,
 }
 
+#[repr(u16)]
+enum Color {
+    WallNormal = 2,
+    WallShadowed = 3,
+}
+
 impl Application for MainApplication {
     fn start(framebuffer: Framebuffer) -> Self {
         Self {
@@ -47,13 +53,9 @@ impl Application for MainApplication {
         let view = self.player_state.get_view(&self.world_map, fov, fov / 160.0, 100.0);
         for (x, wall) in view.iter().enumerate() {
             let (wall_height, shadow) = wall;
-            if *shadow {
-                // draw with color 2 for walls with "shadow"
-                self.framebuffer.set_color(2);
-            } else {
-                // draw with color 3 for walls without "shadow"
-                self.framebuffer.set_color(3);
-            }
+            self.framebuffer.set_color(
+                if *shadow { Color::WallShadowed } else { Color::WallNormal } as u16
+            );
 
             self.framebuffer.line_vertical(
                 Point::new(x as i32, 80 - (wall_height / 2)),
