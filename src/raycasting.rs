@@ -1,10 +1,30 @@
 use core::f32::consts::{FRAC_PI_2, PI};
 use libm::{ceilf, fabsf, floorf, sqrtf, tanf};
+use crate::raycasting::Direction::{Horizontal, Vertical};
 use crate::wasm4::geometry::Point;
 use crate::world_map::WorldMap;
 
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum Direction {
+    Horizontal,
+    Vertical
+}
+
+pub fn ray_cast(origin: &Point<f32>, world_map: &WorldMap, angle: f32) -> (f32, Direction) {
+    // Get both the closest horizontal and vertical wall
+    // intersections for this angle.
+    let horizontal_distance = horizontal_intersection(origin, world_map, angle);
+    let vertical_distance = vertical_intersection(origin, world_map, angle);
+
+    return if horizontal_distance < vertical_distance {
+        (horizontal_distance, Horizontal)
+    } else {
+        (vertical_distance, Vertical)
+    }
+}
+
 /// Returns the nearest wall the ray intersects with on a horizontal grid line.
-pub fn horizontal_intersection(origin: &Point<f32>, world_map: &WorldMap, angle: f32) -> f32 {
+fn horizontal_intersection(origin: &Point<f32>, world_map: &WorldMap, angle: f32) -> f32 {
     // This tells you if the angle is "facing up"
     // regardless of how big the angle is.
     let up = fabsf(floorf(angle / PI) % 2.0) != 0.0;
@@ -62,7 +82,7 @@ pub fn horizontal_intersection(origin: &Point<f32>, world_map: &WorldMap, angle:
 }
 
 /// Returns the nearest wall the ray intersects with on a vertical grid line.
-pub fn vertical_intersection(origin: &Point<f32>, world_map: &WorldMap, angle: f32) -> f32 {
+fn vertical_intersection(origin: &Point<f32>, world_map: &WorldMap, angle: f32) -> f32 {
     // This tells you if the angle is "facing up"
     // regardless of how big the angle is.
     let right = fabsf(floorf((angle - FRAC_PI_2) / PI) % 2.0) != 0.0;

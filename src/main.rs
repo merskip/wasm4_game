@@ -8,6 +8,7 @@ mod raycasting;
 
 use core::f32::consts::PI;
 use crate::player_state::PlayerState;
+use crate::raycasting::Direction::Horizontal;
 use crate::wasm4::application::*;
 use crate::wasm4::framebuffer::Framebuffer;
 use crate::wasm4::gamepad::Gamepad;
@@ -57,9 +58,13 @@ impl Application for MainApplication {
         let fov = PI / 2.7;
         let view = self.player_state.get_view(&self.world_map, fov, fov / 160.0, 100.0);
         for (x, wall) in view.iter().enumerate() {
-            let (wall_height, shadow) = wall;
+            let (wall_height, direction) = wall;
             self.framebuffer.set_color(
-                if *shadow { Color::WallShadowed } else { Color::WallNormal } as u16
+                if *direction == Horizontal {
+                    Color::WallShadowed
+                } else {
+                    Color::WallNormal
+                } as u16
             );
 
             self.framebuffer.line_vertical(
